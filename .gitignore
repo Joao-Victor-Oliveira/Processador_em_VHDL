@@ -1,0 +1,65 @@
+# ######################################################################
+# ## Arquivos de Sistema Operacional e Editores de Código           ##
+# ######################################################################
+
+# Arquivos de sistema do macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails do Windows
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+
+# Arquivos de configuração de editores populares
+.vscode/
+.idea/
+*.swp
+*~
+
+# ######################################################################
+# ## Arquivos de Compilação e Simulação (Comum em VHDL/Verilog)    ##
+# ######################################################################
+
+# Arquivos gerados por simuladores como ModelSim/QuestaSim/Vivado
+*.log
+*.jou
+*.wlf
+*.wdb
+*.vcd
+wave.do
+work/
+transcript
+
+# Arquivos de síntese e implementação
+*.bit
+*.bin
+*.mcs
+*.prm
+*.rpt
+*.srp
+*.syr
+*.xst
+_xmsgs/
+xlnx_auto_0_xdb/
+
+# ######################################################################
+# ## Arquivos de Build e Dependências (Geral)                       ##
+# ######################################################################
+
+# Pastas de build
+build/
+bin/
+obj/
+out/
+
+# Arquivos de dependências (exemplo para outras linguagens)
+node_modules/
+vendor/
+
+# Arquivos compactados
+*.zip
+*.rar
+*.gz
+*.7z
