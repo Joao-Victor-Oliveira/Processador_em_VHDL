@@ -41,6 +41,7 @@ transcript
 *.srp
 *.syr
 *.xst
+*.sh
 _xmsgs/
 xlnx_auto_0_xdb/
 

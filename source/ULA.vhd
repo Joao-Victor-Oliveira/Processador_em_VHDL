@@ -14,22 +14,23 @@ entity ULA is
 end entity ULA;
 
 architecture behavioral of ULA is
-    signal soma,subt: unsigned;
-    signal shiftD, shiftE : STD_LOGIC_VECTOR(15 downto 0);
+    signal soma,subt: unsigned(15 downto 0);
+    signal shiftD, shiftE : std_logic_vector(15 downto 0);
 begin
-
-    saida <= STD_LOGIC_VECTOR(soma)   when controle = "00";
-    saida <= STD_LOGIC_VECTOR(subt)   when controle = "01";
-    saida <= shiftD when controle = "10";
-    saida <= shiftE when controle = "11";
+    with controle select
+    saida <= std_logic_vector(soma)   when  "00",
+             std_logic_vector(subt)   when  "01",
+             shiftD                   when  "10",
+             shiftE                   when  "11",
+             (others => '0')          when  others;
 
     soma <= unsigned(entradaA) + unsigned(entradaB);
     subt <= unsigned(entradaA) - unsigned(entradaB);
 
-    shiftD(14 downto 0) <= entradaA(14 downto 0);
+    shiftD(14 downto 0) <= entradaA(15 downto 1);
     shiftD(15) <= entradaA(15);
 
-    shiftE(15 downto 1) <= entradaA(15 downto 1);
+    shiftE(15 downto 1) <= entradaA(14 downto 0);
     shiftE(0) <= '0';
 
 end architecture behavioral;
