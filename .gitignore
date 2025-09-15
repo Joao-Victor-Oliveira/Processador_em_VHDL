@@ -29,6 +29,7 @@ ehthumbs_vista.db
 *.wdb
 *.vcd
 *.cf
+*.ghw
 
 wave.do
 work/
