@@ -28,6 +28,8 @@ ehthumbs_vista.db
 *.wlf
 *.wdb
 *.vcd
+*.cf
+
 wave.do
 work/
 transcript

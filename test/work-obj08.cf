@@ -1,7 +1,0 @@
-v 4
-file . "tb_ULA.vhd" "b14a3f3028784dbf324ad0c4e2b42d751089f35f" "20250914200758.666":
-  entity tb_ula at 1( 0) + 0 on 13;
-  architecture behavior of tb_ula at 7( 87) + 0 on 14;
-file . "ULA.vhd" "1c18b3ae95e967b398024320a80bdca078b53803" "20250914200758.561":
-  entity ula at 1( 0) + 0 on 11;
-  architecture behavioral of ula at 16( 355) + 0 on 12;
