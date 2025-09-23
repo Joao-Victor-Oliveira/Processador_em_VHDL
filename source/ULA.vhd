@@ -4,9 +4,13 @@ use ieee.numeric_std.all;
 
 entity ULA is
     port (
-        entradaA : in STD_LOGIC_VECTOR(15 downto 0);
-        entradaB : in STD_LOGIC_VECTOR(15 downto 0);
-        controle : in STD_LOGIC_VECTOR(1 downto 0);
+        entradaA : in STD_LOGIC_VECTOR(15 downto 0); -- registrador 1
+        
+        entradaB : in STD_LOGIC_VECTOR(15 downto 0); -- registrador 2
+        entradaC : in STD_LOGIC_VECTOR(15 downto 0); -- constante
+        
+        constante: in std_logic;                    -- seleção da operação com registrador ou constante
+        controle : in STD_LOGIC_VECTOR(1 downto 0); -- seleção da operação
         
         saida    : out STD_LOGIC_VECTOR(15 downto 0)
     );
@@ -24,8 +28,8 @@ begin
              shiftE                   when  "11",
              (others => '0')          when  others;
 
-    soma <= unsigned(entradaA) + unsigned(entradaB);
-    subt <= unsigned(entradaA) - unsigned(entradaB);
+    soma <= unsigned(entradaA) + unsigned(entradaB) when constante = '0' else unsigned(entradaA) + unsigned(entradaC);
+    subt <= unsigned(entradaA) - unsigned(entradaB) when constante = '0' else unsigned(entradaA) - unsigned(entradaC);
 
     shiftD(14 downto 0) <= entradaA(15 downto 1);
     shiftD(15) <= entradaA(15);
