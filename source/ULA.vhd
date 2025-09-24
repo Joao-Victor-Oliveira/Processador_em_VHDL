@@ -4,12 +4,12 @@ use ieee.numeric_std.all;
 
 entity ULA is
     port (
-        entradaA : in STD_LOGIC_VECTOR(15 downto 0); -- registrador 1
+        acumulador : in STD_LOGIC_VECTOR(15 downto 0); -- acumulador
         
-        entradaB : in STD_LOGIC_VECTOR(15 downto 0); -- registrador 2
-        entradaC : in STD_LOGIC_VECTOR(15 downto 0); -- constante
+        registrador : in STD_LOGIC_VECTOR(15 downto 0); -- registrador
+        constante : in STD_LOGIC_VECTOR(15 downto 0); -- cte
         
-        constante: in std_logic;                    -- seleção da operação com registrador ou constante
+        cte: in std_logic;                          -- seleção da operação com registrador ou cte
         controle : in STD_LOGIC_VECTOR(1 downto 0); -- seleção da operação
         
         saida    : out STD_LOGIC_VECTOR(15 downto 0)
@@ -28,13 +28,13 @@ begin
              shiftE                   when  "11",
              (others => '0')          when  others;
 
-    soma <= unsigned(entradaA) + unsigned(entradaB) when constante = '0' else unsigned(entradaA) + unsigned(entradaC);
-    subt <= unsigned(entradaA) - unsigned(entradaB) when constante = '0' else unsigned(entradaA) - unsigned(entradaC);
+    soma <= unsigned(acumulador) + unsigned(registrador) when cte = '0' else unsigned(acumulador) + unsigned(constante);
+    subt <= unsigned(acumulador) - unsigned(registrador) when cte = '0' else unsigned(acumulador) - unsigned(constante);
 
-    shiftD(14 downto 0) <= entradaA(15 downto 1);
-    shiftD(15) <= entradaA(15);
+    shiftD(14 downto 0) <= acumulador(15 downto 1);
+    shiftD(15) <= acumulador(15);
 
-    shiftE(15 downto 1) <= entradaA(14 downto 0);
+    shiftE(15 downto 1) <= acumulador(14 downto 0);
     shiftE(0) <= '0';
 
 end architecture behavioral;
