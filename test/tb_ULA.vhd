@@ -15,7 +15,6 @@ architecture behavior of tb_ULA is
     signal cte         : std_logic;  
     signal saida       : std_logic_vector(15 downto 0);
     
-    signal load        : std_logic;
     signal clk         : std_logic := '0';
     signal rst         : std_logic := '1';
 begin
@@ -39,7 +38,7 @@ begin
         port map(
             clk     => clk,
             rst     => rst,
-            load    => load,
+            load    => '1',
             entrada => acumulador_entrada,
             saida   => acumulador_saida
         );
@@ -62,7 +61,6 @@ begin
     begin
         -- Reset inicial
         rst <= '1';
-        load <= '0';
         wait for 25 ns;
         rst <= '0';
 
@@ -71,49 +69,52 @@ begin
         ----------------------------------------------------------------
         constante <= x"0005";
         cte <= '1';
-        controle <= "00"; 
-        load <= '1';
+        controle <= "00";         controle <= "00";
         wait for 20 ns;
-        load <= '0';
-        wait for 40 ns;
 
         ----------------------------------------------------------------
-        -- Teste 2: soma com registrador
+        -- Teste : soma com constante
+        ----------------------------------------------------------------
+        constante <= x"0013";
+        cte <= '1';
+        controle <= "00";
+        wait for 20 ns;
+
+        ----------------------------------------------------------------
+        -- Teste : subtração com constante
+        ----------------------------------------------------------------
+        constante <= x"0013";
+        cte <= '1';
+        controle <= "01";
+        wait for 20 ns;
+
+        ----------------------------------------------------------------
+        -- Teste : soma com registrador
         ----------------------------------------------------------------
         registrador <= x"0003";
         cte <= '0';
         controle <= "00";
-        load <= '1';
         wait for 20 ns;
-        load <= '0';
-        wait for 40 ns;
 
         ----------------------------------------------------------------
-        -- Teste 3: subtração
+        -- Teste : subtração com registrador
         ----------------------------------------------------------------
         registrador <= x"0002";
-        controle <= "01"; 
-        load <= '1';
+        controle <= "01";
         wait for 20 ns;
-        load <= '0';
-        wait for 40 ns;
 
         ----------------------------------------------------------------
-        -- Teste 4: bit shifts
+        -- Teste : bit shifts
         ----------------------------------------------------------------
         registrador <= x"00FF";
-        controle <= "10"; 
-        load <= '1';
+        controle <= "10"; --direita
         wait for 20 ns;
-        load <= '0';
-        wait for 40 ns;
 
         registrador <= x"0F0F";
-        controle <= "11"; 
-        load <= '1';
+        controle <= "11"; --esquerda
         wait for 20 ns;
-        load <= '0';
-        wait for 40 ns;
+
+        report "Todos os testes foram concluidos com sucesso. Parando a simulacao.\n" severity failure;
 
         wait;
     end process;
