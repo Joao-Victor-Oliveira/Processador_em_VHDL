@@ -41,22 +41,23 @@ begin
             reg_5 <= "0000000000000000";
         elsif rising_edge(clk) then
             if wr_en = '1' then
-                if to_integer(addr_wr) < 6 then
-                    if addr_wr = "000" then
-                        reg_0 <= entrada;
-                    elsif addr_wr = "001" then
-                        reg_1 <= entrada;
-                    elsif addr_wr = "010" then
-                        reg_2 <= entrada;
-                    elsif addr_wr = "011" then
-                        reg_3 <= entrada;
-                    elsif addr_wr = "100" then
-                        reg_4 <= entrada;
-                    elsif addr_wr = "101" then
-                        reg_5 <= entrada;
-                    end if;
-                end if;
-            end if;
+            case addr_wr is
+                when "000" =>
+                    reg_0 <= entrada;
+                when "001" =>
+                    reg_1 <= entrada;
+                when "010" =>
+                    reg_2 <= entrada;
+                when "011" =>
+                    reg_3 <= entrada;
+                when "100" =>
+                    reg_4 <= entrada;
+                when "101" =>
+                    reg_5 <= entrada;
+                when others =>
+                    null;
+            end case;
+        end if;
         end if;
     end process;
 
