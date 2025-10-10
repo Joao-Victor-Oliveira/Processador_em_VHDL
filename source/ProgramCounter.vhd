@@ -7,13 +7,13 @@ entity pc is
         clk      : in  std_logic;
         rst      : in  std_logic;
         load     : in  std_logic;
-        entrada  : in  std_logic_vector(15 downto 0);
-        saida    : out std_logic_vector(15 downto 0)
+        entrada  : in  std_logic_vector(6 downto 0); --para 7 bits(128 enderecos)
+        saida    : out std_logic_vector(6 downto 0)
     );
 end pc;
 
 architecture Behavioral of pc is
-    signal counter : std_logic_vector(15 downto 0) := (others => '0');
+    signal counter : STD_LOGIC_VECTOR(6 downto 0) := (others => '0');
 begin
     process(clk, rst)
     begin
