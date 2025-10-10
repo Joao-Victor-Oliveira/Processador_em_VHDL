@@ -15,7 +15,6 @@ architecture behavior of tb_Banco_ULA is
     signal rst : std_logic := '0';
 
     -- Sinais de interface com o Banco de Registradores
-    -- Inicializados para evitar metavalores na simulação
     signal wr_en      : std_logic := '0';
     signal addr_wr    : unsigned(2 downto 0) := (others => '0');
     signal addr_rd1   : unsigned(2 downto 0) := (others => '0');
@@ -31,14 +30,14 @@ architecture behavior of tb_Banco_ULA is
     signal load_acc           : std_logic := '0';
     signal controle_ula       : std_logic_vector(1 downto 0) := (others => '0');
     signal cte_ula            : std_logic := '0';
-    signal cte_acc            : std_logic := '1'; -- Inicializa para usar a ULA por padrão
+    signal cte_acc            : std_logic := '1'; 
     signal constante_sinal     : std_logic_vector(15 downto 0) := (others => '0');
 
 
 
 begin
 
-    -- Instância dos Componentes (sem alterações)
+    -- Instância dos Componentes 
     BR_inst : entity work.BancoRegistradores
         port map(clk=>clk,
         rst=>rst,
