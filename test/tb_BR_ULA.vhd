@@ -43,7 +43,7 @@ architecture Behavioral of tb_BR_ULA is
     signal saida_tb : std_logic_vector(15 downto 0);
 
     -- Constante para o período do clock
-    constant CLK_PERIOD : time := 10 ns;
+    constant CLK_PERIOD : time := 20 ns;
 
 begin
 
@@ -66,73 +66,69 @@ begin
     -- 4. Processo para gerar o sinal de clock
     clk_process : process
     begin
-        clk_tb <= '0';
-        wait for CLK_PERIOD / 2;
         clk_tb <= '1';
+        wait for CLK_PERIOD / 2;
+        clk_tb <= '0';
         wait for CLK_PERIOD / 2;
     end process;
 
     -- 5. Processo de estímulos para testar a funcionalidade
     stimulus_process : process
     begin
-        -- ** FASE 1: RESET **
-        -- Inicia com o reset ativado para levar o circuito a um estado conhecido
+        
         rst_tb <= '1';
-        wait for 25 ns; -- Mantém o reset por 2 ciclos de clock
-        rst_tb <= '0';
-        wait for CLK_PERIOD;
-
-        load_tb <= '0';
-        
-        -- Escreve o valor 10 (0x000A) no registrador de endereço "001"
-        wr_en_tb      <= '1';
-        addr_wr_tb    <= "001";
-        wr_entrada_tb <= x"000A";
-        wait for CLK_PERIOD; -- Aguarda um ciclo de clock para a escrita ser efetivada
-
-        -- Escreve o valor 20 (0x0014) no registrador de endereço "010"
-        addr_wr_tb    <= "010";
-        wr_entrada_tb <= x"0014";
-        wait for CLK_PERIOD;
-
-        -- Desativa a escrita nos registradores
+        addr_tb <= "000";
+        constante_tb <= x"0000";
+        cte_tb <= '0';
+        controle_tb <= "00";
+        load_tb <= '1';
         wr_en_tb <= '0';
+        addr_wr_tb <= "000";
+        wr_entrada_tb <= "0000000000000000";
+
+        wait for CLK_PERIOD*2;
+        rst_tb <= '0';
+
+        wr_en_tb <= '1';
+        addr_wr_tb <= "000";
+        wr_entrada_tb <= x"0010";
+
         wait for CLK_PERIOD;
 
-        -- Carrega o valor do registrador 1 (que é 10) no acumulador
-        addr_tb     <= "001"; -- Seleciona o registrador 1 para leitura
-        cte_tb      <= '0';     -- Usa o valor do registrador, não a constante
-        controle_tb <= "00";   -- Operação de SOMA (para carregar o primeiro valor)
-        load_tb     <= '1';     -- Habilita o load no acumulador
-        wait for CLK_PERIOD;
-        load_tb     <= '0';     -- Desabilita o load
-        
-        -- Agora, soma o valor do registrador 2 (que é 20) com o acumulador
-        addr_tb <= "010"; -- Seleciona o registrador 2
-        wait for CLK_PERIOD;
-        
-        -- Neste ponto, a SAÍDA (saida_tb) deve ser 10 + 20 = 30 (ou 0x001E)
+        wr_en_tb <= '1';
+        addr_wr_tb <= "001";
+        wr_entrada_tb <= x"0020";
+        controle_tb <= "01";
 
-        -- ** FASE 4: OPERAÇÃO DA ULA (CONSTANTE + ACUMULADOR) **
-        -- Subtrai a constante 5 (0x0005) do valor atual do acumulador (30)
-        cte_tb       <= '1';        -- Usa o valor da constante
-        constante_tb <= x"0005";  -- Define a constante como 5
-        controle_tb  <= "01";      -- Operação de SUBTRAÇÃO
-        load_tb      <= '1';        -- Habilita o load/operação
         wait for CLK_PERIOD;
-        load_tb      <= '0';
         
-        -- Neste ponto, a SAÍDA (saida_tb) deve ser 30 - 5 = 25 (ou 0x0019)
-        wait for CLK_PERIOD;
+        wr_en_tb <= '0';
+        controle_tb <= "00";
+        cte_tb   <= '1';
+        constante_tb <= x"0007";
 
-        load_tb <= '0';
+        wait for CLK_PERIOD;
+        cte_tb   <= '0';
+        addr_tb  <= "001";
         
-        wr_en_tb      <= '1';
-        addr_wr_tb    <= "001";
+        wait for CLK_PERIOD;
+        
+        wr_en_tb <= '1';
+        addr_wr_tb<= "010";
         wr_entrada_tb <= saida_tb;
+        load_tb <= '0';
+        wait for CLK_PERIOD;
 
-        -- Fim da simulação
+        load_tb <= '1'; 
+        addr_tb <= "010";
+        
+        wait for CLK_PERIOD;
+
+        addr_wr_tb<= "011";
+        wr_entrada_tb <= saida_tb;
+        
         wait;
+
     end process;
 
 end Behavioral;

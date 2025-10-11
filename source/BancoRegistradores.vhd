@@ -41,23 +41,23 @@ begin
             reg_5 <= "0000000000000000";
         elsif rising_edge(clk) then
             if wr_en = '1' then
-            case addr_wr is
-                when "000" =>
-                    reg_0 <= entrada;
-                when "001" =>
-                    reg_1 <= entrada;
-                when "010" =>
-                    reg_2 <= entrada;
-                when "011" =>
-                    reg_3 <= entrada;
-                when "100" =>
-                    reg_4 <= entrada;
-                when "101" =>
-                    reg_5 <= entrada;
-                when others =>
-                    null;
-            end case;
-        end if;
+                case addr_wr is
+                    when "000" =>
+                        reg_0 <= entrada;
+                    when "001" =>
+                        reg_1 <= entrada;
+                    when "010" =>
+                        reg_2 <= entrada;
+                    when "011" =>
+                        reg_3 <= entrada;
+                    when "100" =>
+                        reg_4 <= entrada;
+                    when "101" =>
+                        reg_5 <= entrada;
+                    when others =>
+                        null;
+                end case;
+            end if;
         end if;
     end process;
 
