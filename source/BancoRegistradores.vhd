@@ -9,24 +9,24 @@ entity BancoRegistradores is
         
         wr_en       : in  std_logic; -- habilita a escrita
         
-        addr_wr  : in  unsigned(2 downto 0); -- endereço de escrita
-        addr_rd1 : in  unsigned(2 downto 0); -- endereço para saida 1
-        addr_rd2 : in  unsigned(2 downto 0); -- endereço para saida 2
+        addr_wr  : in  unsigned(2 downto 0); -- endereÃ§o de escrita
+        addr_rd1 : in  unsigned(2 downto 0); -- endereÃ§o para saida 1
+        addr_rd2 : in  unsigned(2 downto 0); -- endereÃ§o para saida 2
         
-        entrada   : in  unsigned(15 downto 0); -- conteudo de escrita
+        entrada   : in  std_logic_vector(15 downto 0); -- conteudo de escrita
         
-        saida1    : out unsigned(15 downto 0); -- conteudo do endereço 1
-        saida2    : out unsigned(15 downto 0)  -- conteudo do endereço 2
+        saida1    : out std_logic_vector(15 downto 0); -- conteudo do endereÃ§o 1
+        saida2    : out std_logic_vector(15 downto 0)  -- conteudo do endereÃ§o 2
     );
 end BancoRegistradores;
 
 architecture Behavioral of BancoRegistradores is
-    signal reg_0 : unsigned(15 downto 0) := (others => '0');
-    signal reg_1 : unsigned(15 downto 0) := (others => '0');
-    signal reg_2 : unsigned(15 downto 0) := (others => '0');
-    signal reg_3 : unsigned(15 downto 0) := (others => '0');
-    signal reg_4 : unsigned(15 downto 0) := (others => '0');
-    signal reg_5 : unsigned(15 downto 0) := (others => '0');
+    signal reg_0 : std_logic_vector(15 downto 0) := (others => '0');
+    signal reg_1 : std_logic_vector(15 downto 0) := (others => '0');
+    signal reg_2 : std_logic_vector(15 downto 0) := (others => '0');
+    signal reg_3 : std_logic_vector(15 downto 0) := (others => '0');
+    signal reg_4 : std_logic_vector(15 downto 0) := (others => '0');
+    signal reg_5 : std_logic_vector(15 downto 0) := (others => '0');
 
 begin
 
@@ -41,23 +41,23 @@ begin
             reg_5 <= "0000000000000000";
         elsif rising_edge(clk) then
             if wr_en = '1' then
-            case addr_wr is
-                when "000" =>
-                    reg_0 <= entrada;
-                when "001" =>
-                    reg_1 <= entrada;
-                when "010" =>
-                    reg_2 <= entrada;
-                when "011" =>
-                    reg_3 <= entrada;
-                when "100" =>
-                    reg_4 <= entrada;
-                when "101" =>
-                    reg_5 <= entrada;
-                when others =>
-                    null;
-            end case;
-        end if;
+                case addr_wr is
+                    when "000" =>
+                        reg_0 <= entrada;
+                    when "001" =>
+                        reg_1 <= entrada;
+                    when "010" =>
+                        reg_2 <= entrada;
+                    when "011" =>
+                        reg_3 <= entrada;
+                    when "100" =>
+                        reg_4 <= entrada;
+                    when "101" =>
+                        reg_5 <= entrada;
+                    when others =>
+                        null;
+                end case;
+            end if;
         end if;
     end process;
 
