@@ -9,14 +9,14 @@ entity BancoRegistradores is
         
         wr_en       : in  std_logic; -- habilita a escrita
         
-        addr_wr  : in  unsigned(2 downto 0); -- endereço de escrita
-        addr_rd1 : in  unsigned(2 downto 0); -- endereço para saida 1
-        addr_rd2 : in  unsigned(2 downto 0); -- endereço para saida 2
+        addr_wr  : in  unsigned(2 downto 0); -- endereÃ§o de escrita
+        addr_rd1 : in  unsigned(2 downto 0); -- endereÃ§o para saida 1
+        addr_rd2 : in  unsigned(2 downto 0); -- endereÃ§o para saida 2
         
         entrada   : in  std_logic_vector(15 downto 0); -- conteudo de escrita
         
-        saida1    : out std_logic_vector(15 downto 0); -- conteudo do endereço 1
-        saida2    : out std_logic_vector(15 downto 0)  -- conteudo do endereço 2
+        saida1    : out std_logic_vector(15 downto 0); -- conteudo do endereÃ§o 1
+        saida2    : out std_logic_vector(15 downto 0)  -- conteudo do endereÃ§o 2
     );
 end BancoRegistradores;
 
