@@ -13,20 +13,20 @@ entity BancoRegistradores is
         addr_rd1 : in  unsigned(2 downto 0); -- endereço para saida 1
         addr_rd2 : in  unsigned(2 downto 0); -- endereço para saida 2
         
-        entrada   : in  std_logic_vector(15 downto 0); -- conteudo de escrita
+        entrada   : in  unsigned(15 downto 0); -- conteudo de escrita
         
-        saida1    : out std_logic_vector(15 downto 0); -- conteudo do endereço 1
-        saida2    : out std_logic_vector(15 downto 0)  -- conteudo do endereço 2
+        saida1    : out unsigned(15 downto 0); -- conteudo do endereço 1
+        saida2    : out unsigned(15 downto 0)  -- conteudo do endereço 2
     );
 end BancoRegistradores;
 
 architecture Behavioral of BancoRegistradores is
-    signal reg_0 : std_logic_vector(15 downto 0) := (others => '0');
-    signal reg_1 : std_logic_vector(15 downto 0) := (others => '0');
-    signal reg_2 : std_logic_vector(15 downto 0) := (others => '0');
-    signal reg_3 : std_logic_vector(15 downto 0) := (others => '0');
-    signal reg_4 : std_logic_vector(15 downto 0) := (others => '0');
-    signal reg_5 : std_logic_vector(15 downto 0) := (others => '0');
+    signal reg_0 : unsigned(15 downto 0) := (others => '0');
+    signal reg_1 : unsigned(15 downto 0) := (others => '0');
+    signal reg_2 : unsigned(15 downto 0) := (others => '0');
+    signal reg_3 : unsigned(15 downto 0) := (others => '0');
+    signal reg_4 : unsigned(15 downto 0) := (others => '0');
+    signal reg_5 : unsigned(15 downto 0) := (others => '0');
 
 begin
 
