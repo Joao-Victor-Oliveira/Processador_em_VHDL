@@ -1,6 +1,5 @@
     LDAI 5      ;
     STA R3      ;
-
     LDAI 8      ;
     STA R4      ;
 
