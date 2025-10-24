@@ -11,10 +11,6 @@ end Processador;
     
 
 architecture Structural of Processador is
-    
-    -- ##################################################################
-    -- ##               DECLARAÇÃO DOS COMPONENTES                     ##
-    -- ##################################################################
 
     component  ULA is
     port (
@@ -105,9 +101,6 @@ architecture Structural of Processador is
     );
     end component;
     
-    -- ##################################################################
-    -- ##                 DECLARAÇÃO DOS "FIOS" (SINAIS)               ##
-    -- ##################################################################
     
     -- Sinais do Caminho de Instrução
     signal s_pc_saida      : std_logic_vector(6 downto 0);
@@ -121,7 +114,6 @@ architecture Structural of Processador is
     signal s_imediato_16b  : std_logic_vector(15 downto 0); -- Extensão do imediato
     
     -- Sinais de Controle (saídas da UC)
-    -- (Nomes agora casam com as portas do 'controle')
     signal s_cu_pc_next    : unsigned(6 downto 0);
     signal s_cu_load_pc    : std_logic;
     signal s_cu_wr_en_ri   : std_logic;
@@ -136,19 +128,6 @@ architecture Structural of Processador is
     
 
 begin
-
-    -- ##################################################################
-    -- ##                "CIRCUHARIA" (LÓGICA CONCORRENTE)             ##
-    -- ##################################################################
-
-    -- Extrai o campo imediato (7 bits) da instrução e estende para 16 bits
-    -- (com zeros) para alimentar a ULA.
-    
-    
-    -- ##################################################################
-    -- ##                INSTANCIAÇÃO DOS COMPONENTES                  ##
-    -- ##################################################################
-
     -- Unidade de Controle (Cérebro)
     U_Controle : controle
     port map (
