@@ -1,0 +1,34 @@
+    LDAI 5      ;
+    STA R3      ;
+    LDAI 8      ;
+    STA R4      ;
+
+C:
+    LDA R3      ; 
+    ADD R4      ; 
+    STA R5      ; 
+
+    LDA R5      ; 
+    ADDI -1     ; 
+    STA R5      ;
+
+    JMP 20      ; Jump to 20
+
+	LDA zero	;
+	LDA R5		;
+
+20:
+	LDA R5		;
+	STA R3		;
+	JMP C		;
+
+	LDA zero    ;
+	STA R3		;	
+
+
+	LDAI => Load Accumulator with Immediate
+	LDA  => Load Accumulator
+	ADD  => Add to Accumulator
+	ADDI => Add immediate to accumulator
+	STA  => Store Accumulator's value
+	JMP  => Jump
