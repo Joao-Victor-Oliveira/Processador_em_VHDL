@@ -1,29 +1,19 @@
-    LDAI 5      ;
-    STA R3      ;
-    LDAI 8      ;
-    STA R4      ;
-
+	LDAI 30     ; ACC = 30
+    STA R2      ; R6 = 30
+	
+	LDAI 0
+	STA R3
+	STA R4
 C:
-    LDA R3      ; 
-    ADD R4      ; 
-    STA R5      ; 
-
-    LDA R5      ; 
-    ADDI -1     ; 
-    STA R5      ;
-
-    JMP 20      ; Jump to 20
-
-	LDA zero	;
-	LDA R5		;
-
-20:
-	LDA R5		;
-	STA R3		;
-	JMP C		;
-
-	LDA zero    ;
-	STA R3		;	
+	LDA R4
+	ADD R3
+	STA R4
+	LDA R3
+	ADDI 1
+	STA R3
+	BLT R2 C
+	LDA R4
+	STA R5
 
 
 	LDAI => Load Accumulator with Immediate
@@ -32,3 +22,5 @@ C:
 	ADDI => Add immediate to accumulator
 	STA  => Store Accumulator's value
 	JMP  => Jump
+	BGT  => Branch if Greater Than
+	BLT  => Branch if Less Than
