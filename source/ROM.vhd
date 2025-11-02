@@ -41,6 +41,7 @@ architecture a_rom of rom is
       -- 10: STA R3 ("011")
       10 => "01010110000000",
       
+      -- 11: SUB R2 ("010")
       11 => "01110100000000",
 
       -- E. Se R3<30 salta para a instrução do passo C (Endereço 5)
