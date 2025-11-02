@@ -26,7 +26,9 @@ entity controle is
 
         flag_n_in    : in std_logic; -- N = Negative
         flag_v_in    : in std_logic; -- V = Overflow
-        flag_z_in    : in std_logic  -- Z = Zero
+        flag_z_in    : in std_logic;  -- Z = Zero
+    
+        load_psw     : out std_logic
     );
 end entity;
 
@@ -52,6 +54,8 @@ architecture behavioral of controle is
     constant ADD    : unsigned(3 downto 0) := "0011";
     constant ADDI   : unsigned(3 downto 0) := "0100";
     constant STA    : unsigned(3 downto 0) := "0101";
+    constant SUB    : unsigned(3 downto 0) := "0111";
+    constant SUBI   : unsigned(3 downto 0) := "1000";
     constant JMP    : unsigned(3 downto 0) := "1111";
 
     -- NOP  => Não faz nada
@@ -109,7 +113,7 @@ begin
 
     -- Controle do Acumulador 
     acc_write_en <= '1' when (estado_s = EXECUTE) and 
-                             (opcode = LDAI or opcode = LDA or opcode = ADD or opcode = ADDI) else
+                             (opcode = LDAI or opcode = LDA or opcode = ADD or opcode = ADDI or opcode = SUB or opcode = SUBI) else
                     '0';
 
     -- Controle do Banco de Registradores 
@@ -121,12 +125,12 @@ begin
     -- Controle da ULA (ALU)
     with opcode select
         alu_op_sel <= "00" when ADD | ADDI,      -- Operação "ADD"
-                      "01" when BGT | BLT,       -- Operação "SUB" (para gerar flags)
+                      "01" when SUB | SUBI,       -- Operação "SUB" (para gerar flags)
                       "10" when LDAI | LDA,      -- Operação "PASS_B"
                       (others => '0') when others;
 
     with opcode select
-        alu_src_b_sel <= '1' when LDAI | ADDI, -- Fonte B é o Imediato (LDAI e ADDI)
+        alu_src_b_sel <= '1' when LDAI | ADDI |SUBI, -- Fonte B é o Imediato (LDAI e ADDI)
                          '0' when others;       -- Fonte B é o RegFile (ou não importa)
 
     with opcode select
@@ -135,7 +139,7 @@ begin
                           "00" when others; 
 
     -- Lógica de Salto Condicional (para números com sinal)
-    is_less_than    <= '1' when (flag_n_in xor flag_v_in) = '1' else '0'; -- (N xor V)
+    is_less_than    <= '1' when ((flag_n_in xor flag_v_in) and not flag_z_in) = '1' else '0'; -- (N xor V) Z=0
     is_greater_than <= '1' when (flag_z_in = '0') and ((flag_n_in xor flag_v_in) = '0') else '0'; -- Z=0 e (N=V)
     
     -- Decisão de tomar o salto (somente no estado EXECUTE)
@@ -154,6 +158,10 @@ begin
     pc_next <= relative_addr when (take_branch = '1') else
                destino   when (estado_s = EXECUTE and opcode = JMP) else
                pc_atual + 1; -- Padrão
+
+    with opcode select
+        load_psw <= '1' when ADD | ADDI | SUB | SUBI,
+                    '0' when others;
 
 
 end behavioral;

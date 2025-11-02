@@ -107,7 +107,27 @@ architecture Structural of Processador is
 
         flag_n_in    : in std_logic; -- N = Negative
         flag_v_in    : in std_logic; -- V = Overflow
-        flag_z_in    : in std_logic  -- Z = Zero
+        flag_z_in    : in std_logic;  -- Z = Zero
+
+        load_psw     : out std_logic
+    );
+    end component;
+
+    component  PSW is
+    Port (
+
+        clk      : in  std_logic;
+        rst      : in  std_logic;
+        load     : in  std_logic;
+        
+        z_in    : in std_logic;
+        n_in    : in std_logic;
+        v_in    : in std_logic;
+
+        z_out    : out std_logic;
+        n_out    : out std_logic;
+        v_out    : out std_logic
+
     );
     end component;
     
@@ -140,6 +160,12 @@ architecture Structural of Processador is
     signal s_flag_v          : STD_LOGIC;
     signal s_flag_z          : STD_LOGIC;
 
+    signal c_flag_n          : STD_LOGIC;        
+    signal c_flag_v          : STD_LOGIC;
+    signal c_flag_z          : STD_LOGIC;
+
+    signal s_load_psw        : STD_LOGIC;
+
 begin
     -- Unidade de Controle (Cérebro)
     U_Controle : controle
@@ -162,9 +188,10 @@ begin
         alu_src_b_sel => s_cu_ula_cte_sel,        -- Saída: MUX da ULA (Cte ou Reg)
         estado       => open,                     -- Saída: (Não conectada, p/ debug)
         
-        flag_n_in => s_flag_n ,
-        flag_v_in => s_flag_v ,
-        flag_z_in => s_flag_z 
+        flag_n_in => c_flag_n ,
+        flag_v_in => c_flag_v ,
+        flag_z_in => c_flag_z ,
+        load_psw  => s_load_psw
     );
 
     -- Program Counter (PC)
@@ -237,6 +264,19 @@ begin
         flag_n_out => s_flag_n ,
         flag_v_out => s_flag_v ,
         flag_z_out => s_flag_z 
+    );
+
+    U_PSW: PSW
+     port map(
+        clk => clk,
+        rst => rst,
+        load => s_load_psw,
+        z_in => s_flag_z,
+        n_in => s_flag_n,
+        v_in => s_flag_v,
+        z_out => c_flag_z,
+        n_out => c_flag_n,
+        v_out => c_flag_v
     );
     
 end Structural;

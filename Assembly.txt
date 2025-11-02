@@ -11,7 +11,10 @@ C:
 	LDA R3
 	ADDI 1
 	STA R3
-	BLT R2 C
+
+	SUB R2 	
+	BLT C -- endereço relativo = -8
+	
 	LDA R4
 	STA R5
 
