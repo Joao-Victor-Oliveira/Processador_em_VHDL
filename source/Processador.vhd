@@ -14,12 +14,18 @@ architecture Structural of Processador is
 
     component  ULA is
     port (
-        acumulador : in STD_LOGIC_VECTOR(15 downto 0); -- acumulador
-        registrador : in STD_LOGIC_VECTOR(15 downto 0); -- registrador
-        constante : in STD_LOGIC_VECTOR(15 downto 0); -- cte
-        cte: in std_logic;                          -- seleção da operação com registrador ou cte
-        controle : in STD_LOGIC_VECTOR(1 downto 0); -- seleção da operação
-        saida    : out STD_LOGIC_VECTOR(15 downto 0)
+        acumulador  : in  STD_LOGIC_VECTOR(15 downto 0); -- acumulador
+        registrador : in  STD_LOGIC_VECTOR(15 downto 0); -- registrador
+        constante   : in  STD_LOGIC_VECTOR(15 downto 0); -- cte
+        
+        cte         : in  std_logic; -- '0' = registrador, '1' = constante
+        controle    : in  STD_LOGIC_VECTOR(1 downto 0); -- seleção da operação
+        
+        saida       : out STD_LOGIC_VECTOR(15 downto 0); -- resultado principal
+        
+        flag_n_out  : out std_logic; -- N = Negative
+        flag_v_out  : out std_logic; -- V = Overflow
+        flag_z_out  : out std_logic  -- Z = Zero
     );
     end component;
 
@@ -97,7 +103,31 @@ architecture Structural of Processador is
         constante    : out STD_LOGIC_VECTOR(9 downto 0);
         acc_op_sel   : out STD_LOGIC_VECTOR(1 downto 0);
         alu_op_sel   : out unsigned(1 downto 0); -- Ex: "00"=ADD, "01"=PASS_B
-        alu_src_b_sel: out std_logic               -- Ex: '0'=RegFile, '1'=Imediato
+        alu_src_b_sel: out std_logic;               -- Ex: '0'=RegFile, '1'=Imediato
+
+        flag_n_in    : in std_logic; -- N = Negative
+        flag_v_in    : in std_logic; -- V = Overflow
+        flag_z_in    : in std_logic;  -- Z = Zero
+
+        load_psw     : out std_logic
+    );
+    end component;
+
+    component  PSW is
+    Port (
+
+        clk      : in  std_logic;
+        rst      : in  std_logic;
+        load     : in  std_logic;
+        
+        z_in    : in std_logic;
+        n_in    : in std_logic;
+        v_in    : in std_logic;
+
+        z_out    : out std_logic;
+        n_out    : out std_logic;
+        v_out    : out std_logic
+
     );
     end component;
     
@@ -125,7 +155,16 @@ architecture Structural of Processador is
     signal s_constante     : STD_LOGIC_VECTOR(9 downto 0);
     signal entrada_acc     : STD_LOGIC_VECTOR(15 downto 0);
     signal s_acc_op_sel    : STD_LOGIC_VECTOR(1 downto 0);
-    
+
+    signal s_flag_n          : STD_LOGIC;        
+    signal s_flag_v          : STD_LOGIC;
+    signal s_flag_z          : STD_LOGIC;
+
+    signal c_flag_n          : STD_LOGIC;        
+    signal c_flag_v          : STD_LOGIC;
+    signal c_flag_z          : STD_LOGIC;
+
+    signal s_load_psw        : STD_LOGIC;
 
 begin
     -- Unidade de Controle (Cérebro)
@@ -147,7 +186,12 @@ begin
         acc_op_sel => s_acc_op_sel,
         alu_op_sel   => s_cu_ula_op_sel,         -- Saída: Operação da ULA
         alu_src_b_sel => s_cu_ula_cte_sel,        -- Saída: MUX da ULA (Cte ou Reg)
-        estado       => open                     -- Saída: (Não conectada, p/ debug)
+        estado       => open,                     -- Saída: (Não conectada, p/ debug)
+        
+        flag_n_in => c_flag_n ,
+        flag_v_in => c_flag_v ,
+        flag_z_in => c_flag_z ,
+        load_psw  => s_load_psw
     );
 
     -- Program Counter (PC)
@@ -216,7 +260,23 @@ begin
         constante  => STD_LOGIC_VECTOR(resize(signed(s_constante),16)),          -- Entrada B (opção 1)
         cte        => s_cu_ula_cte_sel,        -- Seletor da Entrada B
         controle   => std_logic_vector(s_cu_ula_op_sel), -- Seletor da Operação (com cast)
-        saida      => s_ula_saida              -- Saída vai para o Acumulador
+        saida      => s_ula_saida,              -- Saída vai para o Acumulador
+        flag_n_out => s_flag_n ,
+        flag_v_out => s_flag_v ,
+        flag_z_out => s_flag_z 
+    );
+
+    U_PSW: PSW
+     port map(
+        clk => clk,
+        rst => rst,
+        load => s_load_psw,
+        z_in => s_flag_z,
+        n_in => s_flag_n,
+        v_in => s_flag_v,
+        z_out => c_flag_z,
+        n_out => c_flag_n,
+        v_out => c_flag_v
     );
     
 end Structural;
