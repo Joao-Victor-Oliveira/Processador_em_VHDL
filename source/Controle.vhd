@@ -159,9 +159,12 @@ begin
                destino   when (estado_s = EXECUTE and opcode = JMP) else
                pc_atual + 1; -- Padrão
 
-    with opcode select
-        load_psw <= '1' when ADD | ADDI | SUB | SUBI,
-                    '0' when others;
+    
+    load_psw <= '1' when (opcode = ADD or
+                        opcode = ADDI or 
+                        opcode = SUB or 
+                        opcode = SUBI)
+                        and estado_s = EXECUTE  else  '0';
 
 
 end behavioral;
