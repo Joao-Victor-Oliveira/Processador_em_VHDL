@@ -45,11 +45,11 @@ architecture a_rom of rom is
       11 => "01110100000000",
 
       -- E. Se R3<30 salta para a instrução do passo C (Endereço 5)
-      -- 12: BLT R2, -7  ; Salta para 5 se ACC (R3) < R6 (30)
+      -- 12: BLT -7  ; Salta para 5 se ACC (R3) < R6 (30)
       --    PC_Atual = 12, Alvo = 5
-      --    Offset = Alvo - (PC_Atual + 1) = 5 - 13 = -8
+      --    Offset = Alvo - (PC_Atual + 1) = 5 - 12 = -7
       --    R2 = "010", -7 (C2, 7 bits) = "1111000"
-      12 => "01110101111010",
+      12 => "01110101111000",
       
       -- F. Copia valor de R4 para R5
       -- 13: LDA R4 ("100")

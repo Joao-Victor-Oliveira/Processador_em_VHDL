@@ -11,9 +11,8 @@ C:
 	LDA R3
 	ADDI 1
 	STA R3
-
 	SUB R2 	
-	BLT -8
+	BLT -7
 	
 	LDA R4
 	STA R5
