@@ -4,8 +4,8 @@ use ieee.numeric_std.all;
 
 entity rom is
    port( 
-         endereco : in unsigned(6 downto 0);  --7  bits
-         dado     : out unsigned(13 downto 0) --14 bits
+         endereco : in unsigned(6 downto 0);
+         dado     : out unsigned(13 downto 0)
    );
 end entity;
 
@@ -13,86 +13,71 @@ architecture a_rom of rom is
    type mem is array (0 to 127) of unsigned(13 downto 0);
    
    -- Opcodes:
-   -- NOP  "0000"
-   -- LDAI "0001"
-   -- LDA  "0010"
-   -- ADD  "0011"
-   -- ADDI "0100"
-   -- STA  "0101"
-   -- BGT  "0110"
-   -- SUB  "0111"
-   -- BLT  "0111"
-   -- SUBI "1000"
-   -- SW   "1001"
-   -- LW   "1010"
-   -- JMP  "1111"
+   -- LDAI: 0001
+   -- STA:  0101
+   -- SW:   1001
+   -- LW:   1010
+   -- JMP:  1111
    
-   -- Formato Reg/Addr: [OP: 4b]_[REG: 3b]_[ADDR: 7b]
-   -- Formato I-Type:   [OP: 4b]_[CONST: 10b]
+   -- Formato R-Type: [OP: 4]_[RegA: 3]_[RegB: 3]_[Unused: 4]
+   -- Formato I-Type: [OP: 4]_[CONST: 10b]
    
    -- Registradores:
-   -- R0: 000
-   -- R1: 001
-   -- R2: 010
-   -- R3: 011
-   -- R4: 100
-   -- R5: 101
+   -- R0: 000, R1: 001, R2: 010, R3: 011
+   -- R4: 100, R5: 101 (R6 e R7 não existem)
 
    constant conteudo_rom : mem := (
-      -- Programa de Teste (SW e LW - Arquitetura Load/Store)
+      -- Programa de Teste (Arquitetura Híbrida)
       
-      -- === PARTE 1: Prepara R1 com 3 valores e escreve na RAM ===
+      -- === PARTE 1: Configurar ponteiros de endereço ===
       
-      -- // R1 = 100
-      -- 0: LDAI 100 (Op 0001, Const 0001100100)
-      0  => B"0001_0001100100", 
-      -- 1: STA R1 (Op 0101, Reg 001, Unused 0000000)
-      1  => B"0101_001_0000000", 
+      -- // R1 = 5 (Ponteiro para RAM[5])
+      0  => B"0001_0000000101", -- 0: LDAI 5
+      1  => B"0101_001_0000000", -- 1: STA R1
       
-      -- // RAM[5] = R1 (100)
-      -- 2: SW R1, 5 (Op 1001, Reg 001, End RAM 0000101)
-      2  => B"1001_001_0000101", 
-      
-      -- // R1 = 200
-      -- 3: LDAI 200 (Op 0001, Const 0011001000)
-      3  => B"0001_0011001000", 
-      -- 4: STA R1 (Op 0101, Reg 001, Unused 0000000)
-      4  => B"0101_001_0000000", 
-      
-      -- // RAM[6] = R1 (200)
-      -- 5: SW R1, 6 (Op 1001, Reg 001, End RAM 0000110)
-      5  => B"1001_001_0000110", 
+      -- // R2 = 6 (Ponteiro para RAM[6])
+      2  => B"0001_0000000110", -- 2: LDAI 6
+      3  => B"0101_010_0000000", -- 3: STA R2
 
-      -- // R1 = 300
-      -- 6: LDAI 300 (Op 0001, Const 0100101100)
-      6  => B"0001_0100101100", 
-      -- 7: STA R1 (Op 0101, Reg 001, Unused 0000000)
-      7  => B"0101_001_0000000", 
+      -- === PARTE 2: Configurar dados e salvar na RAM ===
       
-      -- // RAM[7] = R1 (300)
-      -- 8: SW R1, 7 (Op 1001, Reg 001, End RAM 0000111)
-      8  => B"1001_001_0000111", 
+      -- // R4 = 100 (Dado 1)
+      4  => B"0001_0001100100", -- 4: LDAI 100
+      5  => B"0101_100_0000000", -- 5: STA R4
+      
+      -- // R5 = 200 (Dado 2)
+      6  => B"0001_0011001000", -- 6: LDAI 200
+      7  => B"0101_101_0000000", -- 7: STA R5
 
-      -- === PARTE 2: Lê os 3 valores da RAM para R2, R3, R4 ===
+      -- // Salva os dados na RAM usando ponteiros
+      -- 8: SW R4, R1  (Salva R4 (100) no endereço de R1 (5))
+      8  => B"1001_100_001_0000",
       
-      -- // R2 = RAM[5] (100)
-      -- 9: LW R2, 5 (Op 1010, Reg 010, End RAM 0000101)
-      9  => B"1010_010_0000101", 
-      
-      -- // R3 = RAM[6] (200)
-      -- 10: LW R3, 6 (Op 1010, Reg 011, End RAM 0000110)
-      10 => B"1010_011_0000110", 
-      
-      -- // R4 = RAM[7] (300)
-      -- 11: LW R4, 7 (Op 1010, Reg 100, End RAM 0000111)
-      11 => B"1010_100_0000111", 
+      -- 9: SW R5, R2  (Salva R5 (200) no endereço de R2 (6))
+      9  => B"1001_101_010_0000",
 
-      -- === PARTE 3: Halt ===
+      -- === PARTE 3: Ler da RAM para Acumulador e salvar em Regs ===
       
-      -- 12: JMP 12 (Op 1111, Reg 000, Endereço 0001100)
-      12 => B"1111_000_0001100", 
+      -- // ACC = RAM[5] (usando ponteiro R1)
+      -- 10: LW R0, R1 (Reg R0 é ignorado, endereço vem de R1)
+      10 => B"1010_000_001_0000",
       
-      -- Restante da memória é 0
+      -- // R0 = ACC (que contém 100)
+      -- 11: STA R0
+      11 => B"0101_000_0000000", -- <-- MUDANÇA AQUI (Era R6)
+      
+      -- // ACC = RAM[6] (usando ponteiro R2)
+      -- 12: LW R0, R2 (Reg R0 é ignorado, endereço vem de R2)
+      12 => B"1010_000_010_0000",
+      
+      -- // R3 = ACC (que contém 200)
+      -- 13: STA R3
+      13 => B"0101_011_0000000", -- <-- MUDANÇA AQUI (Era R7)
+
+      -- === PARTE 4: Halt ===
+      -- 14: JMP 14
+      14 => B"1111_000_0001110", 
+      
       others => B"0000_000_0000000"
    );
 begin

@@ -92,18 +92,18 @@ architecture Structural of Processador is
     );
     end component;
 
-    -- Componente RAM (tipo de dado corrigido para std_logic_vector)
+    -- ## MUDANÇA AQUI: Definição do componente RAM atualizada ##
     component ram is
     port( 
          clk      : in std_logic;
-         endereco : in unsigned(6 downto 0);
+         endereco : in STD_LOGIC_VECTOR(15 downto 0); -- Era: unsigned(6 downto 0)
          wr_en    : in std_logic;
          dado_in  : in std_logic_vector(15 downto 0);
-         dado_out : out std_logic_vector(15 downto 0)
+         dado_out : out std_logic_vector(15 downto 0) 
     );
     end component;
 
-    -- ## Definição do 'controle' ATUALIZADA (com reg_in_sel) ##
+    -- (Componente 'controle' - sem mudança na definição)
     component controle is
     port (
         clk          : in  std_logic;
@@ -118,17 +118,17 @@ architecture Structural of Processador is
         
         acc_write_en : out std_logic;
         reg_write_en : out std_logic;
-        reg_addr     : out unsigned(2 downto 0);
+        
+        reg_addr_rd1 : out unsigned(2 downto 0); 
+        reg_addr_rd2 : out unsigned(2 downto 0); 
+        
         constante    : out STD_LOGIC_VECTOR(9 downto 0);
         acc_op_sel   : out STD_LOGIC_VECTOR(1 downto 0);
         alu_op_sel   : out unsigned(1 downto 0);
         alu_src_b_sel: out std_logic;
 
         ram_wr_en    : out std_logic;
-        ram_addr     : out unsigned(6 downto 0);
         ram_in_sel   : out std_logic;
-        
-        reg_in_sel   : out std_logic; -- ## SINAL OBRIGATÓRIO ##
 
         flag_n_in    : in std_logic;
         flag_v_in    : in std_logic;
@@ -138,90 +138,62 @@ architecture Structural of Processador is
     end component;
     
     
-    -- Sinais do Caminho de Instrução
+    -- (Todos os Sinais - sem mudança)
     signal s_pc_saida      : std_logic_vector(6 downto 0);
     signal s_rom_saida     : unsigned(13 downto 0);
     signal s_ri_saida      : unsigned(13 downto 0);
-
-    -- Sinais do Caminho de Dados
     signal s_acc_saida     : std_logic_vector(15 downto 0);
     signal s_ula_saida     : std_logic_vector(15 downto 0);
     signal s_reg_saida1    : std_logic_vector(15 downto 0);
+    signal s_reg_saida2    : std_logic_vector(15 downto 0);
     signal s_imediato_16b  : std_logic_vector(15 downto 0);
     signal entrada_acc     : std_logic_vector(15 downto 0);
-    
-    -- Sinais da RAM de Dados
     signal s_ram_data_out  : std_logic_vector(15 downto 0);
     signal s_ram_data_in   : std_logic_vector(15 downto 0);
-    
-    -- Sinal do MUX de entrada do RegFile
-    signal s_reg_data_in   : std_logic_vector(15 downto 0);
-
-    -- Sinais de Controle (saídas da UC)
     signal s_cu_pc_next    : unsigned(6 downto 0);
     signal s_cu_load_pc    : std_logic;
     signal s_cu_wr_en_ri   : std_logic;
     signal s_cu_acc_load   : std_logic;
     signal s_cu_reg_wr_en  : std_logic;
-    signal s_cu_reg_addr   : unsigned(2 downto 0);
+    signal s_cu_reg_addr_rd1 : unsigned(2 downto 0); 
+    signal s_cu_reg_addr_rd2 : unsigned(2 downto 0); 
     signal s_cu_ula_op_sel : unsigned(1 downto 0);
     signal s_cu_ula_cte_sel: std_logic;
     signal s_constante     : std_logic_vector(9 downto 0);
     signal s_acc_op_sel    : std_logic_vector(1 downto 0);
     signal s_load_psw      : std_logic;
     signal s_cu_ram_wr_en  : std_logic;
-    signal s_cu_ram_addr   : unsigned(6 downto 0);
     signal s_cu_ram_in_sel : std_logic;
-    signal s_cu_reg_in_sel : std_logic; -- Fio para o novo sinal
-    
-    -- Sinais das Flags
-    signal s_flag_n          : std_logic;        
-    signal s_flag_v          : std_logic;
-    signal s_flag_z          : std_logic;
-    signal c_flag_n          : std_logic;        
-    signal c_flag_v          : std_logic;
-    signal c_flag_z          : std_logic;
+    signal s_flag_n, s_flag_v, s_flag_z : std_logic;        
+    signal c_flag_n, c_flag_v, c_flag_z : std_logic;        
 
 begin
 
-    -- Extensor de sinal para Imediato (Constante)
+    -- (Instanciações e lógica - sem mudança até a RAM)
     s_imediato_16b <= std_logic_vector(resize(signed(s_constante), 16));
 
-    -- Unidade de Controle (Cérebro)
     U_Controle : controle
     port map (
-        clk          => clk,
-        rst          => rst,
-        instr        => s_ri_saida,
+        clk          => clk, rst => rst, instr => s_ri_saida,
         pc_atual     => unsigned(s_pc_saida),
-        
         pc_next      => s_cu_pc_next,            
         load_pc      => s_cu_load_pc,            
         wr_en_RI     => s_cu_wr_en_ri,           
-        
         acc_write_en => s_cu_acc_load,           
-        reg_write_en => s_cu_reg_wr_en,          
-        reg_addr     => s_cu_reg_addr,           
+        reg_write_en => s_cu_reg_wr_en,
+        reg_addr_rd1 => s_cu_reg_addr_rd1, 
+        reg_addr_rd2 => s_cu_reg_addr_rd2, 
         constante    => s_constante,
         acc_op_sel   => s_acc_op_sel,
         alu_op_sel   => s_cu_ula_op_sel,         
         alu_src_b_sel=> s_cu_ula_cte_sel,        
-        
         ram_wr_en    => s_cu_ram_wr_en,
-        ram_addr     => s_cu_ram_addr,
         ram_in_sel   => s_cu_ram_in_sel,
-        
-        reg_in_sel   => s_cu_reg_in_sel,   -- ## CONEXÃO CORRIGIDA ##
-        
         estado       => open,
-        
-        flag_n_in    => c_flag_n,
-        flag_v_in    => c_flag_v,
-        flag_z_in    => c_flag_z,
-        load_psw     => s_load_psw
+        flag_n_in    => c_flag_n, flag_v_in => c_flag_v,
+        flag_z_in    => c_flag_z, load_psw  => s_load_psw
     );
 
-    -- Caminho de Instrução (PC, ROM, RI)
     U_PC : pc
     port map (
         clk      => clk, rst => rst, load => s_cu_load_pc,
@@ -237,13 +209,11 @@ begin
         entrada => s_rom_saida, saida   => s_ri_saida
     );
 
-
-    -- MUX de Entrada do Acumulador (Controlado por acc_op_sel)
-    -- ## MUDANÇA AQUI: "11" (RAM) foi REMOVIDO ##
     with s_acc_op_sel select
-        entrada_acc <= s_ula_saida     when "00", -- Resultado da ULA
-                       s_imediato_16b  when "01", -- Constante (LDAI)
-                       s_reg_saida1    when "10", -- RegFile (LDA)
+        entrada_acc <= s_ula_saida     when "00",
+                       s_imediato_16b  when "01",
+                       s_reg_saida1    when "10",
+                       s_ram_data_out  when "11",
                        (others => '0') when others;
 
     U_Acumulador : Acumulador
@@ -251,34 +221,24 @@ begin
         clk      => clk, rst => rst, load => s_cu_acc_load,
         entrada  => entrada_acc, saida    => s_acc_saida
     );
-
-    -- ## NOVO MUX DE ENTRADA DO BANCO DE REGISTRADORES ##
-    -- Controlado por reg_in_sel
-    -- '0' = Acumulador (Para STA)
-    -- '1' = RAM (Para LW)
-    s_reg_data_in <= s_ram_data_out when s_cu_reg_in_sel = '1' else
-                     s_acc_saida;
-
-    -- Banco de Registradores
-    -- ## MUDANÇA AQUI: A porta 'entrada' usa o novo MUX ##
+    
     U_BancoRegs : BancoRegistradores
     port map (
         clk      => clk,
         rst      => rst,
-        wr_en    => s_cu_reg_wr_en,          -- Ativado por STA e LW
-        addr_wr  => s_cu_reg_addr,
-        addr_rd1 => s_cu_reg_addr,
-        addr_rd2 => (others => '0'),
-        entrada  => s_reg_data_in,           -- VEM DO NOVO MUX
-        saida1   => s_reg_saida1,
-        saida2   => open
+        wr_en    => s_cu_reg_wr_en,
+        addr_wr  => s_cu_reg_addr_rd1, 
+        addr_rd1 => s_cu_reg_addr_rd1, 
+        addr_rd2 => s_cu_reg_addr_rd2, 
+        entrada  => s_acc_saida,       
+        saida1   => s_reg_saida1,    
+        saida2   => s_reg_saida2     
     );
 
-    -- ULA e PSW
     U_ULA : ULA
     port map (
         acumulador  => s_acc_saida,
-        registrador => s_reg_saida1,
+        registrador => s_reg_saida1, 
         constante   => s_imediato_16b,
         cte         => s_cu_ula_cte_sel,
         controle    => std_logic_vector(s_cu_ula_op_sel),
@@ -294,20 +254,18 @@ begin
         z_out  => c_flag_z, n_out => c_flag_n, v_out => c_flag_v
     );
 
-    -- MUX de Entrada da RAM (Controlado por ram_in_sel)
-    -- '0' = Acumulador (Default, não usado por SW)
-    -- '1' = RegFile (Para SW)
     s_ram_data_in <= s_reg_saida1 when s_cu_ram_in_sel = '1' else
                      s_acc_saida;
 
-    -- RAM de Dados
+    -- ## MUDANÇA AQUI: Instanciação da RAM atualizada ##
     U_RAM : ram
     port map (
         clk       => clk,
-        endereco  => s_cu_ram_addr,
+        -- Removida a truncagem (6 downto 0) e a conversão para unsigned
+        endereco  => s_reg_saida2,         -- Agora usa o endereço completo de 16 bits
         wr_en     => s_cu_ram_wr_en,
-        dado_in   => s_ram_data_in,       -- VEM DO MUX DA RAM
-        dado_out  => s_ram_data_out     -- Vai para o MUX do Banco de Regs
+        dado_in   => s_ram_data_in,
+        dado_out  => s_ram_data_out
     );
     
 end Structural;
