@@ -19,7 +19,7 @@ architecture behavioral of processador_tb is
     end component;
 
     -- Constante de tempo para o clock
-    constant CLK_PERIOD : time := 10 ns;
+    constant CLK_PERIOD : time := 10 fs;
 
     -- Sinais de entrada para o UUT
     signal s_clk : std_logic := '0';

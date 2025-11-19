@@ -53,7 +53,7 @@ architecture Structural of Processador is
 
     component ROM is 
     Port ( 
-         endereco : in unsigned(6 downto 0);
+         endereco : in unsigned(15 downto 0);
          dado     : out unsigned(13 downto 0)
     );
     end component;
@@ -165,7 +165,7 @@ architecture Structural of Processador is
     signal s_cu_ram_wr_en  : std_logic;
     signal s_cu_ram_in_sel : std_logic;
     signal s_flag_n, s_flag_v, s_flag_z : std_logic;        
-    signal c_flag_n, c_flag_v, c_flag_z : std_logic;        
+    signal c_flag_n, c_flag_v, c_flag_z : std_logic;       
 
 begin
 
@@ -201,7 +201,7 @@ begin
     );
     U_ROM : ROM
     port map (
-        endereco => unsigned(s_pc_saida), dado => s_rom_saida
+        endereco(15 downto 7)=> "000000000",endereco(6 downto 0) => unsigned(s_pc_saida), dado => s_rom_saida
     );
     U_RI : RI
     port map (
